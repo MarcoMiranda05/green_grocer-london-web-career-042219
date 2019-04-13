@@ -23,29 +23,19 @@ def consolidate_cart(cart)
 end
 
 def apply_coupons(cart, coupons)
-  return_cart = cart
-counter = 0
-coupons.each do
-if cart[ coupons[counter][:item] ]
-  item_name=coupons[counter][:item]
-  coupon_count=coupons[counter][:num]
-  cart_count=return_cart[coupons[counter][:item]][:count]
+  new_cart = cart
 
-  if coupon_count<=cart_count
-    apply_count=coupon_count
-    voucher_name = "#{coupons[counter][:item]} W/COUPON"
-    if !return_cart[voucher_name]
-      return_cart[voucher_name]={}
-      return_cart[voucher_name][:price]=coupons[counter][:cost]
-      return_cart[voucher_name][:clearance]=return_cart[item_name][:clearance]
-      return_cart[voucher_name][:count]=0
-    end
-    return_cart[voucher_name][:count]+=1
-    return_cart[item_name][:count]=cart_count-apply_count
-  end
+ coupons.each do | coupon |
+  next unless new_cart[coupon[:item]]
+  next unless new_cart[coupon[:item]][:count] >= coupon[:num]
+  new_item = coupon[:item] + " W/COUPON"
+  new_cart[new_item] ||= new_cart[coupon[:item]].merge({count:0})
+  new_cart[new_item][:count] += 1
+  new_cart[new_item][:price] = coupon[:cost]
+    new_cart[coupon[:item]][:count] -= coupon[:num]
+end
 
- end
-counter+=1
+ new_cart
 end
 
 def apply_clearance(cart)
