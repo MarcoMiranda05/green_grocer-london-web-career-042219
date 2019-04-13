@@ -39,9 +39,26 @@ end
 end
 
 def apply_clearance(cart)
-  # code here
+  new_cart = cart
+
+ new_cart.each do | item, data |
+  next unless data[:clearance]
+  data[:price] -= (data[:price] * 0.2).round(2)
+end
+
+ new_cart
 end
 
 def checkout(cart, coupons)
-  # code here
+  new_cart = consolidate_cart(cart)
+ new_cart = apply_coupons(new_cart, coupons)
+ new_cart = apply_clearance(new_cart)
+
+  total = 0.00
+
+  new_cart.each { | item, data |  total += data[:price] * data[:count] }
+
+  total -= (total * 0.1).round(2)  if total > 100
+
+  total
 end
